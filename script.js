@@ -34,11 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
         circle.style.strokeDashoffset = circumference - (percent / 100) * circumference;
     }
 
-    const startDate = new Date().getTime(); // Dihitung dari hari ini
-    // Diubah ke 9 April 2027 pukul 10:00
+    const startDate = new Date().getTime(); 
     const targetDate = new Date("April 09, 2026 10:00:00").getTime();
     
-    // Total durasi statis (misal 1 tahun) untuk perhitungan lingkaran
     const totalDuration = targetDate - new Date("January 01, 2026 00:00:00").getTime();
 
     function updateTimer() {
@@ -73,62 +71,99 @@ document.addEventListener("DOMContentLoaded", () => {
             let currIdx = parseInt(item.getAttribute('data-index'));
             lightboxImg.src = imagesArray[currIdx];
             lightbox.classList.add('active');
+            document.querySelector('.scroll-view').classList.add('no-scroll'); // Mengunci background
         });
     });
 
     window.closeLightbox = () => { 
         lightbox.classList.remove('active'); 
+        document.querySelector('.scroll-view').classList.remove('no-scroll'); // Melepas background
     }
 
-    // --- 6. BUKU TAMU PUBLIK & RSVP ---
+    // --- 6. BUKU TAMU PUBLIK & RSVP DENGAN GOOGLE SHEETS ---
     const wishesForm = document.getElementById('wishes-form');
     const wishesContainer = document.getElementById('wishes-container');
     
-    let wishesData = [
-        { name: "Keluarga Besar", date: "Baru saja", rsvp: "Hadir", text: "Selamat menempuh hidup baru! Semoga menjadi keluarga sakinah, mawaddah, warahmah." },
-        { name: "Teman Kampus", date: "2 Jam yang lalu", rsvp: "Tidak Hadir", text: "Akhirnya! Selamat ya untuk kalian berdua, maaf belum bisa hadir." }
-    ];
+    // PENTING: GANTI TEXT DI BAWAH INI DENGAN URL WEB APP MILIKMU
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz7vsNobyeUUepXyvlc1U7zJBQlxgGja6swJoV3HbHn87orsQcV4QJgekdo03o1TKZU/exec'; 
 
-    function renderWishes() {
-        wishesContainer.innerHTML = '';
-        wishesData.forEach(wish => {
-            const card = document.createElement('div');
-            card.className = 'wish-card';
-            
-            // Menentukan warna badge RSVP
-            let badgeClass = 'rsvp-ragu';
-            if(wish.rsvp === 'Hadir') badgeClass = 'rsvp-hadir';
-            if(wish.rsvp === 'Tidak Hadir') badgeClass = 'rsvp-tidak';
+    // Fungsi mengambil data dari Google Sheets
+    function fetchWishes() {
+        wishesContainer.innerHTML = '<div style="text-align:center; padding: 20px;"><div class="spinner" style="margin: 0 auto;"></div></div>'; 
+        
+        fetch(scriptURL)
+            .then(response => response.json())
+            .then(data => {
+                wishesContainer.innerHTML = ''; // Kosongkan container
+                
+                if (data.length === 0) {
+                    wishesContainer.innerHTML = '<p style="text-align: center; color: var(--sys-text-tertiary); font-size: 0.9rem; padding: 20px 0;">Belum ada ucapan. Jadilah yang pertama memberikan doa restu!</p>';
+                    return;
+                }
 
-            card.innerHTML = `
-                <div class="wish-header">
-                    <div class="wish-name">${wish.name}</div>
-                    <div class="wish-rsvp-badge ${badgeClass}">${wish.rsvp}</div>
-                </div>
-                <div class="wish-date">${wish.date}</div>
-                <div class="wish-msg">${wish.text}</div>
-            `;
-            wishesContainer.appendChild(card);
-        });
+                data.forEach(wish => {
+                    const card = document.createElement('div');
+                    card.className = 'wish-card';
+                    
+                    let badgeClass = 'rsvp-ragu';
+                    if(wish.rsvp === 'Hadir') badgeClass = 'rsvp-hadir';
+                    if(wish.rsvp === 'Tidak Hadir') badgeClass = 'rsvp-tidak';
+
+                    // Format tanggal agar lebih rapi
+                    const dateObj = new Date(wish.waktu);
+                    const dateStr = dateObj.toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'});
+
+                    card.innerHTML = `
+                        <div class="wish-header">
+                            <div class="wish-name">${wish.nama}</div>
+                            <div class="wish-rsvp-badge ${badgeClass}">${wish.rsvp}</div>
+                        </div>
+                        <div class="wish-date">${dateStr}</div>
+                        <div class="wish-msg">${wish.pesan}</div>
+                    `;
+                    wishesContainer.appendChild(card);
+                });
+            })
+            .catch(error => {
+                wishesContainer.innerHTML = '<p style="text-align: center; color: #ff6464; font-size:0.85rem;">Gagal memuat daftar ucapan. Pastikan URL Google Script sudah benar.</p>';
+                console.error('Error memuat data:', error);
+            });
     }
 
-    renderWishes(); 
+    // Panggil fungsi untuk menampilkan daftar ucapan saat halaman dibuka
+    fetchWishes(); 
+
+    // Fungsi mengirim data ke Google Sheets
     wishesForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const nameInput = document.getElementById('wish-name').value;
-        const rsvpInput = document.getElementById('wish-rsvp').value;
-        const textInput = document.getElementById('wish-text').value;
+        
+        // Ubah tombol jadi "Mengirim..." agar user tidak klik 2 kali
+        const submitBtn = wishesForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Mengirim...';
+        submitBtn.disabled = true;
 
-        wishesData.unshift({
-            name: nameInput,
-            date: "Baru saja",
-            rsvp: rsvpInput,
-            text: textInput
-        });
+        // Siapkan data dari form
+        const params = new URLSearchParams();
+        params.append('nama', document.getElementById('wish-name').value);
+        params.append('rsvp', document.getElementById('wish-rsvp').value);
+        params.append('pesan', document.getElementById('wish-text').value);
 
-        renderWishes(); 
-        wishesForm.reset(); 
-        showToast("Ucapan & RSVP terkirim");
+        fetch(scriptURL, { method: 'POST', body: params })
+            .then(response => {
+                showToast("Ucapan & RSVP berhasil terkirim!");
+                wishesForm.reset(); // Kosongkan input form
+                fetchWishes(); // Refresh daftar ucapan secara otomatis dari Google Sheets
+            })
+            .catch(error => {
+                showToast("Gagal mengirim ucapan. Coba lagi.");
+                console.error('Error mengirim data:', error);
+            })
+            .finally(() => {
+                // Kembalikan tombol seperti semula
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
     });
 });
 
@@ -163,11 +198,17 @@ function toggleMusic() {
 
 function openModal(modalId) { 
     const modal = document.getElementById(modalId);
-    if(modal) modal.classList.add('active'); 
+    if(modal) {
+        modal.classList.add('active'); 
+        document.querySelector('.scroll-view').classList.add('no-scroll'); // Mengunci background
+    }
 }
 function closeModal(modalId) { 
     const modal = document.getElementById(modalId);
-    if(modal) modal.classList.remove('active'); 
+    if(modal) {
+        modal.classList.remove('active'); 
+        document.querySelector('.scroll-view').classList.remove('no-scroll'); // Melepas background
+    }
 }
 
 async function copyToClipboard(text) {
@@ -199,7 +240,6 @@ function showToast(msg) {
 
 // --- FUNGSI SAVE THE DATE (GOOGLE CALENDAR) ---
 function saveTheDate() {
-    // Format Waktu UTC untuk 9 April 2027 pukul 10:00 WIB sampai 15:00 WIB
     const startDate = "20270409T030000Z";
     const endDate = "20270409T080000Z";
     
@@ -209,6 +249,5 @@ function saveTheDate() {
     
     const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${details}&location=${location}`;
     
-    // Buka di tab baru
     window.open(googleCalendarUrl, '_blank');
 }

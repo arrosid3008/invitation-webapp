@@ -198,13 +198,10 @@ body {
 /* --- LAYAR SAMPUL / COVER SCREEN (PREMIUM COLOR & GLASS) - */
 /* ========================================================= */
 
-/* 1. Latar Belakang Gradasi Abstrak (Tanpa Gambar) */
 .cover-container { 
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 88888; 
     display: flex; justify-content: center; align-items: center; 
     transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    
-    /* Warna dasar gelap dipadukan dengan cahaya ungu, pink, dan biru lembut */
     background-color: #0c0d12; 
     background-image: 
         radial-gradient(circle at 15% 20%, rgba(130, 80, 255, 0.15) 0%, transparent 45%),
@@ -212,7 +209,6 @@ body {
         radial-gradient(circle at 50% 50%, rgba(0, 180, 255, 0.08) 0%, transparent 60%);
 }
 
-/* 5. Cahaya (Glow) lembut tepat di belakang kartu utama */
 .cover-content { 
     text-align: center; 
     padding: 30px; 
@@ -226,7 +222,6 @@ body {
     position: absolute;
     top: 50%; left: 50%; transform: translate(-50%, -50%);
     width: 120%; height: 120%;
-    /* Pendaran ungu/biru di belakang kartu */
     background: radial-gradient(circle, rgba(140, 100, 255, 0.12) 0%, rgba(0, 200, 255, 0.05) 40%, transparent 70%);
     z-index: -1;
     filter: blur(40px);
@@ -235,7 +230,6 @@ body {
 
 .hide-cover { transform: translateY(-100%); }
 
-/* 5. Efek glow tipis untuk teks judul utama */
 .couple-hero-names { 
     font-size: 3.2rem; 
     font-weight: 500; 
@@ -245,18 +239,15 @@ body {
     text-shadow: 0 0 20px rgba(160, 120, 255, 0.4), 0 4px 10px rgba(0,0,0,0.5); 
 }
 
-/* 2 & 3. Kartu Utama: Efek Kaca Kuat, Kedalaman 3D & Hover */
 .cover-content .guest-info {
-    background: rgba(255, 255, 255, 0.06); /* Putih semi-transparan */
+    background: rgba(255, 255, 255, 0.06); 
     backdrop-filter: blur(20px) saturate(140%);
     -webkit-backdrop-filter: blur(20px) saturate(140%);
-    /* Efek highlight di sudut atas & kiri layaknya pantulan cahaya di ujung kaca */
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-top: 1px solid rgba(255, 255, 255, 0.25);
     border-left: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 28px;
     padding: 24px;
-    /* Bayangan lembut agar terlihat melayang (floating) */
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.15);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: default;
@@ -266,7 +257,6 @@ body {
     box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.25), 0 0 25px rgba(160, 120, 255, 0.15);
 }
 
-/* 4. Tombol "Buka Undangan" Gaya Kaca (Glass Style) */
 .cover-content .btn-primary {
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(15px);
@@ -283,7 +273,6 @@ body {
     position: relative;
     overflow: hidden;
 }
-/* Efek pantulan cahaya mengkilat yang berjalan saat di-hover */
 .cover-content .btn-primary::after {
     content: '';
     position: absolute;
@@ -332,4 +321,9 @@ body {
     font-size: 0.8rem;
     color: var(--sys-text-secondary);
     font-weight: 400;
+}
+
+/* --- UTILITY CLASSES UNTUK FIX SCROLL BOCOR --- */
+.no-scroll { 
+    overflow: hidden !important; 
 }
