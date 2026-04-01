@@ -71,13 +71,13 @@ document.addEventListener("DOMContentLoaded", () => {
             let currIdx = parseInt(item.getAttribute('data-index'));
             lightboxImg.src = imagesArray[currIdx];
             lightbox.classList.add('active');
-            document.querySelector('.scroll-view').classList.add('no-scroll'); // Mengunci background
+            document.querySelector('.scroll-view').classList.add('no-scroll'); 
         });
     });
 
     window.closeLightbox = () => { 
         lightbox.classList.remove('active'); 
-        document.querySelector('.scroll-view').classList.remove('no-scroll'); // Melepas background
+        document.querySelector('.scroll-view').classList.remove('no-scroll'); 
     }
 
     // --- 6. BUKU TAMU PUBLIK & RSVP DENGAN GOOGLE SHEETS ---
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch(scriptURL)
             .then(response => response.json())
             .then(data => {
-                wishesContainer.innerHTML = ''; // Kosongkan container
+                wishesContainer.innerHTML = ''; 
                 
                 if (data.length === 0) {
                     wishesContainer.innerHTML = '<p style="text-align: center; color: var(--sys-text-tertiary); font-size: 0.9rem; padding: 20px 0;">Belum ada ucapan. Jadilah yang pertama memberikan doa restu!</p>';
@@ -109,7 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     if(wish.rsvp === 'Hadir') badgeClass = 'rsvp-hadir';
                     if(wish.rsvp === 'Tidak Hadir') badgeClass = 'rsvp-tidak';
 
-                    // Format tanggal agar lebih rapi
                     const dateObj = new Date(wish.waktu);
                     const dateStr = dateObj.toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'});
 
@@ -130,20 +129,17 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
-    // Panggil fungsi untuk menampilkan daftar ucapan saat halaman dibuka
     fetchWishes(); 
 
     // Fungsi mengirim data ke Google Sheets
     wishesForm.addEventListener('submit', (e) => {
         e.preventDefault();
         
-        // Ubah tombol jadi "Mengirim..." agar user tidak klik 2 kali
         const submitBtn = wishesForm.querySelector('button[type="submit"]');
         const originalText = submitBtn.textContent;
         submitBtn.textContent = 'Mengirim...';
         submitBtn.disabled = true;
 
-        // Siapkan data dari form
         const params = new URLSearchParams();
         params.append('nama', document.getElementById('wish-name').value);
         params.append('rsvp', document.getElementById('wish-rsvp').value);
@@ -152,15 +148,14 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch(scriptURL, { method: 'POST', body: params })
             .then(response => {
                 showToast("Ucapan & RSVP berhasil terkirim!");
-                wishesForm.reset(); // Kosongkan input form
-                fetchWishes(); // Refresh daftar ucapan secara otomatis dari Google Sheets
+                wishesForm.reset(); 
+                fetchWishes(); 
             })
             .catch(error => {
                 showToast("Gagal mengirim ucapan. Coba lagi.");
                 console.error('Error mengirim data:', error);
             })
             .finally(() => {
-                // Kembalikan tombol seperti semula
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
             });
@@ -200,14 +195,14 @@ function openModal(modalId) {
     const modal = document.getElementById(modalId);
     if(modal) {
         modal.classList.add('active'); 
-        document.querySelector('.scroll-view').classList.add('no-scroll'); // Mengunci background
+        document.querySelector('.scroll-view').classList.add('no-scroll');
     }
 }
 function closeModal(modalId) { 
     const modal = document.getElementById(modalId);
     if(modal) {
         modal.classList.remove('active'); 
-        document.querySelector('.scroll-view').classList.remove('no-scroll'); // Melepas background
+        document.querySelector('.scroll-view').classList.remove('no-scroll'); 
     }
 }
 

@@ -24,14 +24,18 @@ body {
     color: var(--sys-text-primary);
     font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     display: flex; justify-content: center; align-items: center;
-    min-height: 100vh; overflow: hidden;
+    min-height: 100vh;
+    min-height: 100dvh; /* FIX: Mendukung tinggi viewport dinamis (Mobile) */
+    overflow: hidden;
     -webkit-font-smoothing: antialiased;
 }
 
-/* --- LATAR BELAKANG GLOBAL (STYLE DASHBOARD UNTUK HALAMAN UTAMA) --- */
+/* --- LATAR BELAKANG GLOBAL --- */
 .ios-bg {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0;
-    /* Latar belakang interior gelap untuk kedalaman dashboard halaman utama */
+    position: fixed; top: 0; left: 0; width: 100vw; 
+    height: 100vh; 
+    height: 100dvh; /* FIX */
+    z-index: 0;
     background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80');
     background-size: cover;
     background-position: center;
@@ -67,7 +71,10 @@ body {
 
 /* --- KONTAINER APLIKASI UTAMA --- */
 .app-container { 
-    position: relative; width: 100%; max-width: 420px; height: 100vh; max-height: 850px; 
+    position: relative; width: 100%; max-width: 420px; 
+    height: 100vh;
+    height: 100dvh; /* FIX */
+    max-height: 850px; 
     z-index: 1; display: flex; flex-direction: column;
 }
 .scroll-view { flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 24px; scroll-behavior: smooth; }
@@ -79,20 +86,9 @@ body {
 .wedding-date { font-size: 0.85rem; color: var(--sys-accent); letter-spacing: 1px; font-weight: 500; }
 .brand-text-small { font-size: 0.75rem; color: var(--sys-text-secondary); letter-spacing: 1.5px; font-weight: 600; text-transform: uppercase;}
 
-/* --- BANNER HERO (Di Atas Hitung Mundur) --- */
-.hero-banner {
-    margin-bottom: 24px;
-    width: 100%;
-}
-.banner-img {
-    width: 100%;
-    height: 220px;
-    border-radius: 24px;
-    background-size: cover;
-    background-position: center;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: var(--glass-shadow);
-}
+/* --- BANNER HERO --- */
+.hero-banner { margin-bottom: 24px; width: 100%; }
+.banner-img { width: 100%; height: 220px; border-radius: 24px; background-size: cover; background-position: center; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: var(--glass-shadow); }
 
 /* --- WIDGET HITUNG MUNDUR --- */
 .dashboard-widgets { margin-bottom: 16px; }
@@ -139,7 +135,7 @@ body {
 .wish-date { font-size: 0.75rem; color: var(--sys-text-tertiary); margin-bottom: 8px;}
 .wish-msg { font-size: 0.9rem; color: var(--sys-text-secondary); line-height: 1.5; font-weight: 400;}
 
-/* --- INPUT & TOMBOL (GLOBAL) --- */
+/* --- INPUT & TOMBOL --- */
 .input-field, .input-area { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px; color: var(--sys-text-primary); font-family: inherit; margin-bottom: 12px; outline: none; transition: all 0.3s; font-size: 0.95rem;}
 .input-field::placeholder, .input-area::placeholder { color: var(--sys-text-tertiary); }
 .input-field:focus, .input-area:focus { background: rgba(0,0,0,0.4); border-color: var(--sys-accent); box-shadow: 0 0 0 2px rgba(0, 210, 255, 0.2);}
@@ -153,13 +149,27 @@ body {
 .btn-secondary:active { transform: scale(0.96); background: rgba(0,0,0,0.4);}
 
 /* --- MODAL (POP-UP) --- */
-.lightbox { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.lightbox { 
+    position: fixed; top: 0; left: 0; width: 100vw; 
+    height: 100vh;
+    height: 100dvh; /* FIX */
+    z-index: 9999; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+}
 .lightbox-overlay { position: absolute; top:0; left:0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 .lightbox.active { opacity: 1; pointer-events: all; }
 .modal-slide-up { transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
 .lightbox.active .modal-slide-up { transform: translateY(0); }
 
-.modal-box { width: 100%; max-width: 420px; max-height: 85vh; overflow-y: auto; padding: 24px; text-align: left; border-radius: 28px 28px 0 0; background: rgba(30, 30, 30, 0.65); backdrop-filter: blur(40px); border-top: 1px solid var(--glass-border); border-bottom: none;}
+.modal-box { 
+    width: 100%; max-width: 420px; 
+    max-height: 85vh; 
+    max-height: 85dvh; /* FIX */
+    overflow-y: auto; 
+    -webkit-overflow-scrolling: touch; /* FIX: scroll mulus iOS */
+    padding: 24px; 
+    padding-bottom: calc(24px + env(safe-area-inset-bottom)); /* FIX padding aman untuk layar berponi/bar */
+    text-align: left; border-radius: 28px 28px 0 0; background: rgba(30, 30, 30, 0.65); backdrop-filter: blur(40px); border-top: 1px solid var(--glass-border); border-bottom: none;
+}
 .modal-box::-webkit-scrollbar { display: none; }
 .modal-drag-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 3px; margin: 0 auto 20px auto; }
 .section-title { font-size: 1.5rem; font-weight: 500; margin-bottom: 24px; text-align: left; letter-spacing: -0.5px;}
@@ -195,11 +205,13 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ========================================================= */
-/* --- LAYAR SAMPUL / COVER SCREEN (PREMIUM COLOR & GLASS) - */
+/* --- LAYAR SAMPUL / COVER SCREEN                         - */
 /* ========================================================= */
-
 .cover-container { 
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 88888; 
+    position: fixed; top: 0; left: 0; width: 100vw; 
+    height: 100vh; 
+    height: 100dvh; /* FIX */
+    z-index: 88888; 
     display: flex; justify-content: center; align-items: center; 
     transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     background-color: #0c0d12; 
@@ -323,7 +335,5 @@ body {
     font-weight: 400;
 }
 
-/* --- UTILITY CLASSES UNTUK FIX SCROLL BOCOR --- */
-.no-scroll { 
-    overflow: hidden !important; 
-}
+/* --- UTILITY CLASSES --- */
+.no-scroll { overflow: hidden !important; }
